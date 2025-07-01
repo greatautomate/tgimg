@@ -1,0 +1,31 @@
+services:
+  - type: worker
+    name: telegram-ai-bot
+    env: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python src/main.py
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: BFL_API_KEY
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: DATABASE_NAME
+        value: telegram_ai_bot
+      - key: MAX_REQUESTS_PER_MINUTE
+        value: 10
+      - key: MAX_ACTIVE_TASKS
+        value: 5
+      - key: LOG_LEVEL
+        value: INFO
+      - key: ENVIRONMENT
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+
+

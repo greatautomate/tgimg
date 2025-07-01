@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  telegram-bot:
+    build: .
+    container_name: telegram-ai-bot
+    restart: unless-stopped
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - BFL_API_KEY=${BFL_API_KEY}
+      - MONGODB_URI=${MONGODB_URI}
+      - DATABASE_NAME=${DATABASE_NAME:-telegram_ai_bot}
+      - MAX_REQUESTS_PER_MINUTE=${MAX_REQUESTS_PER_MINUTE:-10}
+      - MAX_ACTIVE_TASKS=${MAX_ACTIVE_TASKS:-5}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+    depends_on:
+      - mongodb
+    networks:
+      - bot-network
+
+  mongodb:
+    image: mongo:7.0
+    container_name: telegram-bot-mongo
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:-password}
+      - MONGO_INITDB_DATABASE=${DATABASE_NAME:-telegram_ai_bot}
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - bot-network
+
+networks:
+  bot-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+
+
